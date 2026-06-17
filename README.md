@@ -48,9 +48,7 @@ A region verdict aggregates the patch (visible fraction + green fraction).
 
 ## Quick Demo
 
-Select a LOI on the reference image and `skin_loi` automatically maps  the projection onto the target image and classifies the visibility of the region. 
-
-Step 1. Select a reference and a target image depicting  t
+The first step is to select two images and extract the meshes. Next, select a location of image on the **reference image** (left) and the program automatically maps the projection onto the **target image** (right) and classifies the visibility of the region. 
 
 <table>
   <tr>
@@ -58,8 +56,8 @@ Step 1. Select a reference and a target image depicting  t
     <td align="center"><img src="results/Step2.png" alt="Step 2: classified region on target" width="100%"></td>
   </tr>
   <tr>
-    <td align="center"><b>Step 1</b> — select the LOI on the reference image</td>
-    <td align="center"><b>Step 2</b> — mapped & classified on the target image</td>
+    <td align="center"><b>Step 1</b> - Upload your reference and target images</td>
+    <td align="center"><b>Step 2</b> — Select your LOI on the reference image</td>
   </tr>
 </table>
 
@@ -137,19 +135,6 @@ offline/batch mesh export.
 ## Project layout
 
 ```
-<<<<<<< HEAD
-app.py                                 # Gradio web app
-src/skin_loi/
-  config.py                            # model id, colors, thresholds
-  mesh_extraction.py                   # MeshResult + extract_mesh()
-  projection.py                        # project(), pixel_to_vertex()
-  region.py                            # n_ring() patch growing
-  visibility.py                        # 3-way classifier + region verdict
-  overlay.py                           # colored overlays + verdict badge HTML
-  pipeline.py                          # LOIPipeline orchestrator (loads estimator once)
-tests/test_visibility.py               # classifier threshold tests
-notebooks/test_loi_extraction.ipynb    # original exploration notebook (reference)
-=======
 app.py                       # Gradio web app
 src/
   generate_mesh.py           # standalone CLI for batch mesh export
@@ -163,5 +148,4 @@ src/
     pipeline.py              # LOIPipeline orchestrator (loads estimator once)
 tests/test_visibility.py     # classifier threshold tests
 notebooks/                   # original exploration notebooks (reference)
->>>>>>> b5fcd88 (fix(readme): add docs for using the generate_mesh.py CLI tool)
 ```
