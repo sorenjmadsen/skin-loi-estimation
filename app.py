@@ -26,6 +26,7 @@ import numpy as np
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
 from skin_loi.config import Settings, add_cli_args  # noqa: E402
+from skin_loi.mesh_extraction import MultiplePeopleDetected  # noqa: E402
 from skin_loi.pipeline import LOIPipeline  # noqa: E402
 
 # Populated in main(); module-level so the Gradio callbacks can reach them.
@@ -225,7 +226,16 @@ def on_extract(ref_rgb, tgt_rgb):
     yield None, None, gr.update(), gr.update(), gr.update(
         value=_banner(f"Extracting reference mesh (1/2)…{note}", busy=True)
     )
-    ref_mesh = PIPE.extract(_to_bgr(ref_rgb))
+    try:
+        ref_mesh = PIPE.extract(_to_bgr(ref_rgb))
+    except MultiplePeopleDetected as e:
+        yield None, None, gr.update(), gr.update(), gr.update(
+            value=_banner(
+                f"Detected {e.count} people in the reference image; "
+                "please use a photo with a single person."
+            )
+        )
+        return
     if ref_mesh is None:
         yield None, None, gr.update(), gr.update(), gr.update(
             value=_banner("No person detected in the reference image.")
@@ -235,7 +245,16 @@ def on_extract(ref_rgb, tgt_rgb):
     yield ref_mesh, None, gr.update(), gr.update(), gr.update(
         value=_banner("Extracting target mesh (2/2)…", busy=True)
     )
-    tgt_mesh = PIPE.extract(_to_bgr(tgt_rgb))
+    try:
+        tgt_mesh = PIPE.extract(_to_bgr(tgt_rgb))
+    except MultiplePeopleDetected as e:
+        yield ref_mesh, None, gr.update(), gr.update(), gr.update(
+            value=_banner(
+                f"Detected {e.count} people in the target image; "
+                "please use a photo with a single person."
+            )
+        )
+        return
     if tgt_mesh is None:
         yield ref_mesh, None, gr.update(), gr.update(), gr.update(
             value=_banner("No person detected in the target image.")

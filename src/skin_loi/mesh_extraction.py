@@ -15,6 +15,19 @@ import numpy as np
 import trimesh
 
 
+class MultiplePeopleDetected(Exception):
+    """Raised when the estimator finds more than one person in an image.
+
+    The LOI workflow assumes a single subject so that the fixed-topology mesh
+    maps the same anatomical region across the reference and target poses.
+    Carries `count` so callers can phrase an image-specific message.
+    """
+
+    def __init__(self, count: int):
+        self.count = count
+        super().__init__(f"Expected a single person, but detected {count}.")
+
+
 @dataclass
 class MeshResult:
     """A single person's mesh in the validated camera/render frame."""
@@ -65,6 +78,8 @@ def _to_render_frame(pred_vertices: np.ndarray, cam_t: np.ndarray) -> np.ndarray
     """Replicate Renderer.vertices_to_trimesh: add cam_t, rotate 180 deg about X.
 
     rotation_matrix(180, [1,0,0]) maps (x, y, z) -> (x, -y, -z).
+
+    Functionally equivalent to Renderer.vertices_to_trimesh(vertices, camera_translation, rot_axis=[1, 0, 0], rot_angle=180)
     """
     verts = pred_vertices.astype(np.float64) + cam_t.astype(np.float64)
     rot = trimesh.transformations.rotation_matrix(np.radians(180), [1, 0, 0])
@@ -75,7 +90,9 @@ def _to_render_frame(pred_vertices: np.ndarray, cam_t: np.ndarray) -> np.ndarray
 def extract_mesh(image_bgr: np.ndarray, estimator, person_index: int = 0) -> MeshResult | None:
     """Run the estimator on an in-memory BGR image and return a MeshResult.
 
-    Returns None if no person is detected.
+    Returns None if no person is detected. Raises MultiplePeopleDetected if the
+    estimator finds more than one person, since the LOI workflow requires a
+    single subject for the fixed-topology mesh to map across poses.
     """
     import tempfile
     import os
@@ -95,6 +112,10 @@ def extract_mesh(image_bgr: np.ndarray, estimator, person_index: int = 0) -> Mes
     if not outputs or person_index >= len(outputs):
         free_estimator_memory(estimator)
         return None
+
+    if len(outputs) > 1:
+        free_estimator_memory(estimator)
+        raise MultiplePeopleDetected(len(outputs))
 
     out = outputs[person_index]
     cam_t = np.asarray(out["pred_cam_t"], dtype=np.float64).reshape(3)

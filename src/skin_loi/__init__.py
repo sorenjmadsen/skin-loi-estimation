@@ -4,7 +4,12 @@ from __future__ import annotations
 
 from . import config
 from .config import Settings, add_cli_args
-from .mesh_extraction import MeshResult, extract_mesh, free_estimator_memory
+from .mesh_extraction import (
+    MeshResult,
+    MultiplePeopleDetected,
+    extract_mesh,
+    free_estimator_memory,
+)
 from .projection import pixel_to_vertex, project
 from .region import n_ring
 from .visibility import RegionStats, classify_region, region_verdict
@@ -16,6 +21,7 @@ __all__ = [
     "Settings",
     "add_cli_args",
     "MeshResult",
+    "MultiplePeopleDetected",
     "extract_mesh",
     "free_estimator_memory",
     "project",
