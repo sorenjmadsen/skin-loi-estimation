@@ -46,6 +46,23 @@ Labels use two angular bands on the facing cosine (defaults in
 
 A region verdict aggregates the patch (visible fraction + green fraction).
 
+## Quick Demo
+
+Select a LOI on the reference image and `skin_loi` automatically maps  the projection onto the target image and classifies the visibility of the region. 
+
+Step 1. Select a reference and a target image depicting  t
+
+<table>
+  <tr>
+    <td align="center"><img src="results/Step1.png" alt="Step 1: select LOI on reference" width="100%"></td>
+    <td align="center"><img src="results/Step2.png" alt="Step 2: classified region on target" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Step 1</b> — select the LOI on the reference image</td>
+    <td align="center"><b>Step 2</b> — mapped & classified on the target image</td>
+  </tr>
+</table>
+
 ## Setup
 
 1. Install SAM 3D Body and its dependencies per [`sam3d/INSTALL.md`](sam3d/INSTALL.md),
