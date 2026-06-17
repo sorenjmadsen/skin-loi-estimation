@@ -76,9 +76,51 @@ SKIN_LOI_DEVICE=cuda python app.py   # or cpu
 3. The target pose shows the colored region overlay and a verdict badge. Tune the
    **Thresholds** (grazing cosine, region rings, anchor radius) to recompute live.
 
+## Batch mesh generation (CLI)
+
+`src/generate_mesh.py` is a standalone command-line tool for pre-extracting
+SAM 3D Body meshes from images (independent of the Gradio app). For each input
+image it writes a `.ply` mesh, a mesh overlay, a bbox image, and a focal-length
+JSON into a per-image subfolder of the output directory. This is how the sample
+`output/poseA` and `output/poseB` artifacts were produced.
+
+```bash
+# Single image
+python src/generate_mesh.py --image poses/poseA.png --output-dir output
+
+# A whole directory of images (.jpg/.jpeg/.png/.webp/.bmp)
+python src/generate_mesh.py --image-dir poses --output-dir output
+
+# Run on CPU instead of the default CUDA
+python src/generate_mesh.py --image poses/poseA.png --output-dir output --device cpu
+```
+
+Arguments:
+
+- `--image` - path to a single input image (mutually exclusive with `--image-dir`).
+- `--image-dir` - directory of images to batch-process.
+- `--output-dir` (required) - destination for the `.ply`, overlays, bbox images,
+  and focal-length JSON.
+- `--device` - `cuda` (default) or `cpu`.
+
+Output for an image named `poseA.png` lands in `output/poseA/`:
+
+```
+output/poseA/
+  poseA_mesh_000.ply
+  poseA_overlay_000.png
+  poseA_bbox_000.png
+  poseA_focal_length.json
+```
+
+Note: this tool is not used by the web app, which extracts meshes in-memory via
+`skin_loi.mesh_extraction.extract_mesh`. It is kept as a convenience for
+offline/batch mesh export.
+
 ## Project layout
 
 ```
+<<<<<<< HEAD
 app.py                                 # Gradio web app
 src/skin_loi/
   config.py                            # model id, colors, thresholds
@@ -90,4 +132,19 @@ src/skin_loi/
   pipeline.py                          # LOIPipeline orchestrator (loads estimator once)
 tests/test_visibility.py               # classifier threshold tests
 notebooks/test_loi_extraction.ipynb    # original exploration notebook (reference)
+=======
+app.py                       # Gradio web app
+src/
+  generate_mesh.py           # standalone CLI for batch mesh export
+  skin_loi/
+    config.py                # model id, colors, thresholds
+    mesh_extraction.py       # MeshResult + extract_mesh()
+    projection.py            # project(), pixel_to_vertex()
+    region.py                # n_ring() patch growing
+    visibility.py            # 3-way classifier + region verdict
+    overlay.py               # colored overlays + verdict badge HTML
+    pipeline.py              # LOIPipeline orchestrator (loads estimator once)
+tests/test_visibility.py     # classifier threshold tests
+notebooks/                   # original exploration notebooks (reference)
+>>>>>>> b5fcd88 (fix(readme): add docs for using the generate_mesh.py CLI tool)
 ```
