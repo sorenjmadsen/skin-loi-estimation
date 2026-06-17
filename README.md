@@ -79,15 +79,15 @@ SKIN_LOI_DEVICE=cuda python app.py   # or cpu
 ## Project layout
 
 ```
-app.py                     # Gradio web app
+app.py                                 # Gradio web app
 src/skin_loi/
-  config.py                # model id, colors, thresholds
-  mesh_extraction.py       # MeshResult + extract_mesh()
-  projection.py            # project(), pixel_to_vertex()
-  region.py                # n_ring() patch growing
-  visibility.py            # 3-way classifier + region verdict
-  overlay.py               # colored overlays + verdict badge HTML
-  pipeline.py              # LOIPipeline orchestrator (loads estimator once)
-tests/test_visibility.py   # classifier threshold tests
-test_loi_extraction.ipynb  # original exploration notebook (reference)
+  config.py                            # model id, colors, thresholds
+  mesh_extraction.py                   # MeshResult + extract_mesh()
+  projection.py                        # project(), pixel_to_vertex()
+  region.py                            # n_ring() patch growing
+  visibility.py                        # 3-way classifier + region verdict
+  overlay.py                           # colored overlays + verdict badge HTML
+  pipeline.py                          # LOIPipeline orchestrator (loads estimator once)
+tests/test_visibility.py               # classifier threshold tests
+notebooks/test_loi_extraction.ipynb    # original exploration notebook (reference)
 ```
